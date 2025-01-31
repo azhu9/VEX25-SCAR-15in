@@ -13,7 +13,7 @@ ez::Drive chassis(
 
     13,    // IMU Port
     2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
-    360);  // Wheel RPM
+    600);  // Wheel RPM
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -29,8 +29,8 @@ void initialize() {
 
   // Configure your chassis controls
   chassis.opcontrol_curve_buttons_toggle(true);  // Enables modifying the controller curve with buttons on the joysticks
-  chassis.opcontrol_drive_activebrake_set(0);    // Sets the active brake kP. We recommend ~2.  0 will disable.
-  chassis.opcontrol_curve_default_set(0, 0);     // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
+  chassis.opcontrol_drive_activebrake_set(2);    // Sets the active brake kP. We recommend ~2.  0 will disable.
+  chassis.opcontrol_curve_default_set(3, 3);     // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
   // Set the drive to your own constants from autons.cpp!
   default_constants();
@@ -113,79 +113,44 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-  // This is preference to what you like to drive on
-  bool leftWingDeployed = false;
-  bool rightWingDeployed = false;
-
-  pros::motor_brake_mode_e_t driver_preference_brake = MOTOR_BRAKE_COAST;
-
-  ez::Piston leftWing('B');
-  ez::Piston rightWing('A');
+  pros::motor_brake_mode_e_t driver_preference_brake = MOTOR_BRAKE_HOLD;
 
   chassis.drive_brake_set(driver_preference_brake);
 
-  ez::Piston climb('F');
-  ez::Piston lict('G');
-  ez::Piston clamp('H');
-  ez::Piston doinker('E');
+  ez::Piston climb('F', false);
+  ez::Piston lift('G', false);
+  ez::Piston clamp('H', false);
+  ez::Piston doinker('E', false);
 
-  pros::MotorGroup front({9, 10});
-  front.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-
-  pros::MotorGroup conveyor({19, 20});
+  intake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   conveyor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
+
   while (true) {
-    // PID Tuner
-    // After you find values that you're happy with, you'll have to set them in auton.cpp
-    if (!pros::competition::is_connected()) {
-      // Enable / Disable PID Tuner
-      //  When enabled:
-      //  * use A and Y to increment / decrement the constants
-      //  * use the arrow keys to navigate the constants
-      if (master.get_digital_new_press(DIGITAL_X))
-        chassis.pid_tuner_toggle();
 
-      // Trigger the selected autonomous routine
-      if (master.get_digital(DIGITAL_B) && master.get_digital(DIGITAL_DOWN)) {
-        autonomous();
-        chassis.drive_brake_set(driver_preference_brake);
-      }
-
-      chassis.pid_tuner_iterate();  // Allow PID Tuner to iterate
-    }
-
-    chassis.opcontrol_tank();  // Tank control
-                               // chassis.opcontrol_arcade_standard(ez::SPLIT);   // Standard split arcade
-                               // chassis.opcontrol_arcade_standard(ez::SINGLE);  // Standard single arcade
-                               // chassis.opcontrol_arcade_flipped(ez::SPLIT);    // Flipped split arcade
-                               // chassis.opcontrol_arcade_flipped(ez::SINGLE);   // Flipped single arcade
-
-    // . . .
-    // Put more user control code here!
-
-    // if (master.get_digital_new_press(DIGITAL_L1)) {
-    //   leftWing = true;
-    // } else if (master.get_digital_new_press(DIGITAL_L2)) {
-    //   leftWing = false;
-    // }
+    // chassis.opcontrol_tank();  // Tank control
+    chassis.opcontrol_arcade_standard(ez::SPLIT);   // Standard split arcade
+    // chassis.opcontrol_arcade_standard(ez::SINGLE);  // Standard single arcade
+    // chassis.opcontrol_arcade_flipped(ez::SPLIT);    // Flipped split arcade
+    // chassis.opcontrol_arcade_flipped(ez::SINGLE);   // Flipped single arcade
 
     bool climbDeployed = false;
-    bool lictDeployed = false;
+    bool liftDeployed = false;
     bool clampDeployed = false;
     bool doinkerDeployed = false;
+    bool lift_positioning = false;
 
-    if (master.get_digital_new_press(DIGITAL_X)) {
+    if (master.get_digital_new_press(DIGITAL_UP)) {
       climbDeployed = !climbDeployed;
       climb.set(climbDeployed);
     }
 
-    if (master.get_digital_new_press(DIGITAL_Y)) {
-      lictDeployed = !lictDeployed;
-      lict.set(lictDeployed);
+    if (master.get_digital_new_press(DIGITAL_A)) {
+      liftDeployed = !liftDeployed;
+      lift.set(liftDeployed);
     }
 
-    if (master.get_digital_new_press(DIGITAL_A)) {
+    if (master.get_digital_new_press(DIGITAL_X)) {
       clampDeployed = !clampDeployed;
       clamp.set(clampDeployed);
     }
@@ -196,21 +161,46 @@ void opcontrol() {
     }
 
     if (master.get_digital_new_press(DIGITAL_R1)) {
-      front.move_velocity(200);
+      intake.move_velocity(127);
     } else if (master.get_digital_new_press(DIGITAL_R2)) {
-      front.move_velocity(-200);
+      intake.move_velocity(-127);
     } else {
-      front.move_velocity(0);
+      intake.brake();
     }
 
     if (master.get_digital_new_press(DIGITAL_L1)) {
-      conveyor.move_velocity(200);
+      conveyor.move_velocity(127);
     } else if (master.get_digital_new_press(DIGITAL_L2)) {
-      conveyor.move_velocity(-200);
+      conveyor.move_velocity(-127);
     } else {
-      conveyor.move_velocity(0);
+      conveyor.brake();
     }
 
+    double hue = color.get_hue();
+
+    if(master.get_digital_new_press(DIGITAL_Y)){
+      lift_positioning = !lift_positioning;
+    }
+
+    if(lift_positioning){
+      color.set_led_pwm(100);
+      if(red_side){
+        if(hue > 0 && hue < 20){
+          conveyor.brake();
+          lift_positioning = false;
+        }
+      }
+      else{
+        if(hue > 160 && hue < 220){
+          conveyor.brake();
+          lift_positioning = false;
+        }
+      }
+    }
+    else{
+      color.set_led_pwm(0);
+    }
+    
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
 }
