@@ -8,8 +8,8 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {11, -12, 13, -14, 15},  // Left Chassis Ports (negative port will reverse it!)
-    {1, -2, 3, -4, 5},       // Right Chassis Ports (negative port will reverse it!)
+    {2, -3, 4, -5, -6},  // Left Chassis Ports (negative port will reverse it!)
+    {11, -12, 13, -14, 15},       // Right Chassis Ports (negative port will reverse it!)
 
     13,    // IMU Port
     2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
@@ -117,13 +117,13 @@ void opcontrol() {
 
   chassis.drive_brake_set(driver_preference_brake);
 
-  ez::Piston climb('F', false);
-  ez::Piston lift('G', false);
-  ez::Piston clamp('H', false);
-  ez::Piston doinker('E', false);
+  // ez::Piston climb('F', false);
+  // ez::Piston lift('G', false);
+  ez::Piston clamp('A', false);
+  // ez::Piston doinker('E', false);
 
   intake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  conveyor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  // conveyor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
 
   while (true) {
@@ -140,66 +140,66 @@ void opcontrol() {
     bool doinkerDeployed = false;
     bool lift_positioning = false;
 
-    if (master.get_digital_new_press(DIGITAL_UP)) {
-      climbDeployed = !climbDeployed;
-      climb.set(climbDeployed);
-    }
+    // if (master.get_digital_new_press(DIGITAL_UP)) {
+    //   climbDeployed = !climbDeployed;
+    //   climb.set(climbDeployed);
+    // }
 
-    if (master.get_digital_new_press(DIGITAL_A)) {
-      liftDeployed = !liftDeployed;
-      lift.set(liftDeployed);
-    }
+    // if (master.get_digital_new_press(DIGITAL_A)) {
+    //   liftDeployed = !liftDeployed;
+    //   lift.set(liftDeployed);
+    // }
 
-    if (master.get_digital_new_press(DIGITAL_X)) {
+    if (master.get_digital_new_press(DIGITAL_B)) {
       clampDeployed = !clampDeployed;
       clamp.set(clampDeployed);
     }
 
-    if (master.get_digital_new_press(DIGITAL_B)) {
-      doinkerDeployed = !doinkerDeployed;
-      doinker.set(doinkerDeployed);
-    }
+    // if (master.get_digital_new_press(DIGITAL_B)) {
+    //   doinkerDeployed = !doinkerDeployed;
+    //   doinker.set(doinkerDeployed);
+    // }
 
-    if (master.get_digital_new_press(DIGITAL_R1)) {
-      intake.move_velocity(127);
-    } else if (master.get_digital_new_press(DIGITAL_R2)) {
-      intake.move_velocity(-127);
+    if (master.get_digital(DIGITAL_R1)) {
+      intake.move(127);
+    } else if (master.get_digital(DIGITAL_R2)) {
+      intake.move(-127);
     } else {
       intake.brake();
     }
 
-    if (master.get_digital_new_press(DIGITAL_L1)) {
-      conveyor.move_velocity(127);
-    } else if (master.get_digital_new_press(DIGITAL_L2)) {
-      conveyor.move_velocity(-127);
-    } else {
-      conveyor.brake();
-    }
+    // if (master.get_digital_new_press(DIGITAL_L1)) {
+    //   conveyor.move_velocity(127);
+    // } else if (master.get_digital_new_press(DIGITAL_L2)) {
+    //   conveyor.move_velocity(-127);
+    // } else {
+    //   conveyor.brake();
+    // }
 
-    double hue = color.get_hue();
+    // double hue = color.get_hue();
 
-    if(master.get_digital_new_press(DIGITAL_Y)){
-      lift_positioning = !lift_positioning;
-    }
+    // if(master.get_digital_new_press(DIGITAL_Y)){
+    //   lift_positioning = !lift_positioning;
+    // }
 
-    if(lift_positioning){
-      color.set_led_pwm(100);
-      if(red_side){
-        if(hue > 0 && hue < 20){
-          conveyor.brake();
-          lift_positioning = false;
-        }
-      }
-      else{
-        if(hue > 160 && hue < 220){
-          conveyor.brake();
-          lift_positioning = false;
-        }
-      }
-    }
-    else{
-      color.set_led_pwm(0);
-    }
+    // if(lift_positioning){
+    //   color.set_led_pwm(100);
+    //   if(red_side){
+    //     if(hue > 0 && hue < 20){
+    //       conveyor.brake();
+    //       lift_positioning = false;
+    //     }
+    //   }
+    //   else{
+    //     if(hue > 160 && hue < 220){
+    //       conveyor.brake();
+    //       lift_positioning = false;
+    //     }
+    //   }
+    // }
+    // else{
+    //   color.set_led_pwm(0);
+    // }
     
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }

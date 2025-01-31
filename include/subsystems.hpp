@@ -6,7 +6,7 @@
 // inline pros::Motor intake(1);
 // inline pros::adi::DigitalIn limit_switch('A');
 
-inline pros::MotorGroup intake({9, 10});
-inline pros::MotorGroup conveyor({19, 20});
+inline pros::MotorGroup intake({7, -16});
+// inline pros::MotorGroup conveyor({19, 20});
 
 inline pros::Optical color(10);
