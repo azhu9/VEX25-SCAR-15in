@@ -28,9 +28,9 @@ void initialize() {
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
 
   // Configure your chassis controls
-  chassis.opcontrol_curve_buttons_toggle(true);  // Enables modifying the controller curve with buttons on the joysticks
+  chassis.opcontrol_curve_buttons_toggle(false);  // Enables modifying the controller curve with buttons on the joysticks
   chassis.opcontrol_drive_activebrake_set(2);    // Sets the active brake kP. We recommend ~2.  0 will disable.
-  chassis.opcontrol_curve_default_set(3, 3);     // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
+  chassis.opcontrol_curve_default_set(2.5, 3.5);     // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
   // Set the drive to your own constants from autons.cpp!
   default_constants();
@@ -117,14 +117,15 @@ void opcontrol() {
 
   chassis.drive_brake_set(driver_preference_brake);
 
-  // ez::Piston climb('F', false);
-  // ez::Piston lift('G', false);
   ez::Piston clamp('A', false);
-  // ez::Piston doinker('E', false);
+  ez::Piston flipper('B', false);
+  ez::Piston rush('C', false);
 
-  intake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  // conveyor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  intake.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 
+    bool clampDeployed = false;
+    bool rushDeployed = false;
+    bool flipperDelpoyed = false;
 
   while (true) {
 
@@ -134,32 +135,6 @@ void opcontrol() {
     // chassis.opcontrol_arcade_flipped(ez::SPLIT);    // Flipped split arcade
     // chassis.opcontrol_arcade_flipped(ez::SINGLE);   // Flipped single arcade
 
-    bool climbDeployed = false;
-    bool liftDeployed = false;
-    bool clampDeployed = false;
-    bool doinkerDeployed = false;
-    bool lift_positioning = false;
-
-    // if (master.get_digital_new_press(DIGITAL_UP)) {
-    //   climbDeployed = !climbDeployed;
-    //   climb.set(climbDeployed);
-    // }
-
-    // if (master.get_digital_new_press(DIGITAL_A)) {
-    //   liftDeployed = !liftDeployed;
-    //   lift.set(liftDeployed);
-    // }
-
-    if (master.get_digital_new_press(DIGITAL_B)) {
-      clampDeployed = !clampDeployed;
-      clamp.set(clampDeployed);
-    }
-
-    // if (master.get_digital_new_press(DIGITAL_B)) {
-    //   doinkerDeployed = !doinkerDeployed;
-    //   doinker.set(doinkerDeployed);
-    // }
-
     if (master.get_digital(DIGITAL_R1)) {
       intake.move(127);
     } else if (master.get_digital(DIGITAL_R2)) {
@@ -168,39 +143,10 @@ void opcontrol() {
       intake.brake();
     }
 
-    // if (master.get_digital_new_press(DIGITAL_L1)) {
-    //   conveyor.move_velocity(127);
-    // } else if (master.get_digital_new_press(DIGITAL_L2)) {
-    //   conveyor.move_velocity(-127);
-    // } else {
-    //   conveyor.brake();
-    // }
-
-    // double hue = color.get_hue();
-
-    // if(master.get_digital_new_press(DIGITAL_Y)){
-    //   lift_positioning = !lift_positioning;
-    // }
-
-    // if(lift_positioning){
-    //   color.set_led_pwm(100);
-    //   if(red_side){
-    //     if(hue > 0 && hue < 20){
-    //       conveyor.brake();
-    //       lift_positioning = false;
-    //     }
-    //   }
-    //   else{
-    //     if(hue > 160 && hue < 220){
-    //       conveyor.brake();
-    //       lift_positioning = false;
-    //     }
-    //   }
-    // }
-    // else{
-    //   color.set_led_pwm(0);
-    // }
-    
+    if(master.get_digital_new_press(DIGITAL_B)){
+      clampDeployed = !clampDeployed;
+      clamp.set(clampDeployed);
+    }
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
 }
