@@ -11,7 +11,7 @@ ez::Drive chassis(
     {-11, -12, -13, -14, -15},  // Left Chassis Ports (negative port will reverse it!)
     {1, 2, 3, 4, 5},       // Right Chassis Ports (negative port will reverse it!)
 
-    13,    // IMU Port
+    21,    // IMU Port
     2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
     600);  // Wheel RPM
 
@@ -128,8 +128,8 @@ void opcontrol() {
   bool doinkerDeployed = false;
   bool lift_positioning = false;
 
-  intake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  conveyor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  intake.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  conveyor.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
 
   while (true) {

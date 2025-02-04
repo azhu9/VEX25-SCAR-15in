@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "small-bot",
+    "project_name": "marco",
     "target": "v5",
     "templates": {
       "EZ-Template": {

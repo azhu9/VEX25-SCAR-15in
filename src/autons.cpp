@@ -10,6 +10,8 @@ const int DRIVE_SPEED = 110;
 const int TURN_SPEED = 90;
 const int SWING_SPEED = 90;
 
+ez::Piston clamp('H', false);
+
 ///
 // Constants
 ///
@@ -30,23 +32,94 @@ void default_constants() {
   chassis.slew_drive_constants_set(7_in, 80);
 }
 
+
+
 ///
 // Drive Example
 ///
 void drive_example() {
+  ez::Piston clamp('H', false);
+
   // The first parameter is target inches
   // The second parameter is max speed the robot will drive at
   // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
   // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
 
-  chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
+
+  
+
+
+  chassis.pid_turn_relative_set(-50_deg, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-12_in, DRIVE_SPEED);
+  chassis.pid_drive_set(-12_in, 40, true);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-12_in, DRIVE_SPEED);
+  clamp.set(true);
+  pros::delay(1000);
+
+  
+  conveyor.move(-40);
+  pros::delay(300);
+  conveyor.brake();
+
+  // chassis.pid_turn_relative_set(45_deg, TURN_SPEED);
+  // chassis.pid_wait();
+
+
+  chassis.pid_swing_set(ez::RIGHT_SWING, 0_deg, SWING_SPEED, 45);
   chassis.pid_wait();
+
+
+
+  conveyor.move(127);
+  intake.move(127);
+
+  pros::delay(2000);
+
+  conveyor.move(-127);
+  pros::delay(500);
+
+  conveyor.move(127);
+  
+  chassis.pid_drive_set(18_in, 40);
+  chassis.pid_wait();
+
+  
+
+  // conveyor.move(-127);
+  // pros::delay(500);
+
+  // conveyor.move(127);
+  // intake.move(127);
+
+  pros::delay(1000);
+
+  conveyor.brake();
+  intake.brake();
+
+  chassis.pid_drive_set(-6_in, 70, true);
+  chassis.pid_wait();
+
+
+  chassis.pid_turn_relative_set(-90_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(44_in, 100, true);
+  chassis.pid_wait();
+
+  conveyor.move(127);
+  intake.move(127);
+
+  chassis.pid_drive_set(4_in, 40, true);
+  chassis.pid_wait();
+
+  pros::delay(2000);
+
+  conveyor.brake();
+  intake.brake();
+  
+  
 }
 
 ///
