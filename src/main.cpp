@@ -28,7 +28,7 @@ void initialize() {
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
 
   // Configure your chassis controls
-  chassis.opcontrol_curve_buttons_toggle(true);  // Enables modifying the controller curve with buttons on the joysticks
+  chassis.opcontrol_curve_buttons_toggle(false);  // Enables modifying the controller curve with buttons on the joysticks
   chassis.opcontrol_drive_activebrake_set(2);    // Sets the active brake kP. We recommend ~2.  0 will disable.
   chassis.opcontrol_curve_default_set(3, 3);     // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
@@ -117,12 +117,10 @@ void opcontrol() {
 
   chassis.drive_brake_set(driver_preference_brake);
 
-  ez::Piston climb('F', false);
   ez::Piston lift('G', false);
   ez::Piston clamp('H', false);
-  ez::Piston doinker('E', false);
+  ez::Piston doinker('F', false);
 
-  bool climbDeployed = false;
   bool liftDeployed = false;
   bool clampDeployed = false;
   bool doinkerDeployed = false;
@@ -141,11 +139,6 @@ void opcontrol() {
     // chassis.opcontrol_arcade_flipped(ez::SINGLE);   // Flipped single arcade
 
 
-
-    if (master.get_digital_new_press(DIGITAL_UP)) {
-      climbDeployed = !climbDeployed;
-      climb.set(climbDeployed);
-    }
 
     if (master.get_digital_new_press(DIGITAL_A)) {
       liftDeployed = !liftDeployed;
@@ -167,7 +160,7 @@ void opcontrol() {
       conveyor.move(127);
     } else if (master.get_digital(DIGITAL_R2)) {
       intake.move(-127);
-      conveyor.move(-127);
+      conveyor.move(-100);
     } else {
       intake.brake();
       conveyor.brake();
