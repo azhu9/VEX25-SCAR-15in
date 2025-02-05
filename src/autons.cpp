@@ -10,7 +10,6 @@ const int DRIVE_SPEED = 110;
 const int TURN_SPEED = 90;
 const int SWING_SPEED = 90;
 
-
 ///
 // Constants
 ///
@@ -31,8 +30,6 @@ void default_constants() {
   chassis.slew_drive_constants_set(7_in, 80);
 }
 
-
-
 ///
 // Drive Example
 ///
@@ -44,7 +41,6 @@ void drive_example() {
   // The second parameter is max speed the robot will drive at
   // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
   // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
-
 
   chassis.pid_turn_relative_set(-50_deg, TURN_SPEED);
   chassis.pid_wait();
@@ -62,21 +58,16 @@ void drive_example() {
   // chassis.pid_turn_relative_set(45_deg, TURN_SPEED);
   // chassis.pid_wait();
 
-
   chassis.pid_swing_set(ez::RIGHT_SWING, 0_deg, SWING_SPEED, 45);
   chassis.pid_wait();
-
-
 
   conveyor.move(127);
   intake.move(127);
 
   pros::delay(2000);
-  
+
   chassis.pid_drive_set(18_in, 40);
   chassis.pid_wait();
-
-  
 
   // conveyor.move(-127);
   // pros::delay(500);
@@ -91,7 +82,6 @@ void drive_example() {
 
   chassis.pid_drive_set(-6_in, 70, true);
   chassis.pid_wait();
-
 
   chassis.pid_turn_relative_set(-90_deg, TURN_SPEED);
   chassis.pid_wait();
@@ -109,7 +99,7 @@ void drive_example() {
 
   conveyor.brake();
   intake.brake();
-  
+
   // chassis.pid_drive_set(6_in, 40, true);
   // chassis.pid_wait();
 
@@ -150,21 +140,13 @@ void drive_example() {
   intake.brake();
   conveyor.brake();
 
-  
-
-
-
   // pros::delay(2000);
 
   // chassis.pid_drive_set(-10_in, 40, true);
   // chassis.pid_wait();
 
-
   intake.brake();
   conveyor.brake();
-
-
-  
 }
 
 ///

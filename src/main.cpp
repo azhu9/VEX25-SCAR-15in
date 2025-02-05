@@ -9,7 +9,7 @@
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
     {-11, -12, -13, -14, -15},  // Left Chassis Ports (negative port will reverse it!)
-    {1, 2, 3, 4, 5},       // Right Chassis Ports (negative port will reverse it!)
+    {1, 2, 3, 4, 5},            // Right Chassis Ports (negative port will reverse it!)
 
     21,    // IMU Port
     2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
@@ -29,8 +29,8 @@ void initialize() {
 
   // Configure your chassis controls
   chassis.opcontrol_curve_buttons_toggle(false);  // Enables modifying the controller curve with buttons on the joysticks
-  chassis.opcontrol_drive_activebrake_set(2);    // Sets the active brake kP. We recommend ~2.  0 will disable.
-  chassis.opcontrol_curve_default_set(3, 3);     // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
+  chassis.opcontrol_drive_activebrake_set(2);     // Sets the active brake kP. We recommend ~2.  0 will disable.
+  chassis.opcontrol_curve_default_set(3, 3);      // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
   // Set the drive to your own constants from autons.cpp!
   default_constants();
@@ -133,16 +133,12 @@ void opcontrol() {
   intake.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   conveyor.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
-
   while (true) {
-
     // chassis.opcontrol_tank();  // Tank control
-    chassis.opcontrol_arcade_standard(ez::SPLIT);   // Standard split arcade
+    chassis.opcontrol_arcade_standard(ez::SPLIT);  // Standard split arcade
     // chassis.opcontrol_arcade_standard(ez::SINGLE);  // Standard single arcade
     // chassis.opcontrol_arcade_flipped(ez::SPLIT);    // Flipped split arcade
     // chassis.opcontrol_arcade_flipped(ez::SINGLE);   // Flipped single arcade
-
-
 
     if (master.get_digital_new_press(DIGITAL_A)) {
       liftDeployed = !liftDeployed;
@@ -176,47 +172,52 @@ void opcontrol() {
     }
 
     // if (master.get_digital(DIGITAL_L1)) {
-      
+
     // } else if (master.get_digital(DIGITAL_L2)) {
-      
+
     // } else {
-      
+
     // }
 
     double hue = color.get_hue();
-    printf("HUE: %f \n", hue); 
+    printf("HUE: %f \n", hue);
 
-
-    if(master.get_digital_new_press(DIGITAL_L1)){
+    if (master.get_digital_new_press(DIGITAL_L1)) {
       lift_positioning = !lift_positioning;
-        master.rumble(".");
+      master.rumble(".");
     }
 
-    if(master.get_digital_new_press(DIGITAL_L2)){
+    if (master.get_digital_new_press(DIGITAL_L2)) {
       color_sorting = !color_sorting;
-        master.rumble("-");
+      master.rumble("-");
     }
 
+    master.set_text(0, 0, "Clr: " + std::to_string(color_sorting) + " Lift: " + std::to_string(lift_positioning));
 
-    
-    if(color_sorting){
-        color.set_led_pwm(100);
-      if(red_side){
-        if(hue > 100 && hue < 220){
+    if (color_sorting) {
+      color.set_led_pwm(100);
+      if (red_side) {
+        if (hue > 100 && hue < 220) {
           pros::delay(100);
           conveyor.move(-127);
           pros::delay(200);
         }
-      }
-      else if(red_side == false){
-        if(hue > 0 && hue < 20){
+      } else if (red_side == false) {
+        if (hue > 0 && hue < 20) {
         }
       }
-    }
-    else if(lift_positioning){
+    } else if (lift_positioning) {
       color.set_led_pwm(100);
-      if(red_side){
-        if(hue > 0 && hue < 20){
+      if (red_side) {
+        if (hue > 0 && hue < 20) {
+          conveyor.brake();
+          conveyor.move(-80);
+          pros::delay(100);
+          conveyor.brake();
+          lift_positioning = false;
+        }
+      } else if (red_side == false) {
+        if (hue > 100 && hue < 220) {
           conveyor.brake();
           conveyor.move(-80);
           pros::delay(100);
@@ -224,22 +225,14 @@ void opcontrol() {
           lift_positioning = false;
         }
       }
-      else if(red_side == false){
-        if(hue > 100 && hue < 220){
-          conveyor.brake();
-          conveyor.move(-80);
-          pros::delay(100);
-          conveyor.brake();
-          lift_positioning = false;
-        }
-      }
-    }
-    else{
+    } else {
       color.set_led_pwm(0);
     }
 
+    // pros::lcd::initialize();
+    // pros::lcd::set_text(1, "Hello, VEX V5!");
+    // pros::delay(1000);
 
-    
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
 }
