@@ -120,11 +120,15 @@ void opcontrol() {
   ez::Piston lift('G', false);
   ez::Piston clamp('H', false);
   ez::Piston doinker('F', false);
+  ez::Piston intakeLift('E', false);
 
   bool liftDeployed = false;
   bool clampDeployed = false;
   bool doinkerDeployed = false;
+  bool intakeLiftDeployed = true;
+
   bool lift_positioning = false;
+  bool color_sorting = false;
 
   intake.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   conveyor.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
@@ -155,6 +159,11 @@ void opcontrol() {
       doinker.set(doinkerDeployed);
     }
 
+    if (master.get_digital_new_press(DIGITAL_UP)) {
+      intakeLiftDeployed = !intakeLiftDeployed;
+      intakeLift.set(intakeLiftDeployed);
+    }
+
     if (master.get_digital(DIGITAL_R1)) {
       intake.move(127);
       conveyor.move(127);
@@ -175,29 +184,61 @@ void opcontrol() {
     // }
 
     double hue = color.get_hue();
+    printf("HUE: %f \n", hue); 
+
 
     if(master.get_digital_new_press(DIGITAL_L1)){
       lift_positioning = !lift_positioning;
+        master.rumble(".");
     }
 
-    if(lift_positioning){
+    if(master.get_digital_new_press(DIGITAL_L2)){
+      color_sorting = !color_sorting;
+        master.rumble("-");
+    }
+
+
+    
+    if(color_sorting){
+        color.set_led_pwm(100);
+      if(red_side){
+        if(hue > 100 && hue < 220){
+          pros::delay(100);
+          conveyor.move(-127);
+          pros::delay(200);
+        }
+      }
+      else if(red_side == false){
+        if(hue > 0 && hue < 20){
+        }
+      }
+    }
+    else if(lift_positioning){
       color.set_led_pwm(100);
       if(red_side){
         if(hue > 0 && hue < 20){
           conveyor.brake();
-          // lift_positioning = false;
+          conveyor.move(-80);
+          pros::delay(100);
+          conveyor.brake();
+          lift_positioning = false;
         }
       }
-      else{
-        if(hue > 160 && hue < 220){
+      else if(red_side == false){
+        if(hue > 100 && hue < 220){
           conveyor.brake();
-          // lift_positioning = false;
+          conveyor.move(-80);
+          pros::delay(100);
+          conveyor.brake();
+          lift_positioning = false;
         }
       }
     }
     else{
       color.set_led_pwm(0);
     }
+
+
     
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
