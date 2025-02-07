@@ -35,7 +35,7 @@ void default_constants() {
 ///
 void drive_example() {
   ez::Piston clamp('H', false);
-  ez::Piston doinker('F', false);
+  ez::Piston intakeLift('E', false);
 
   // The first parameter is target inches
   // The second parameter is max speed the robot will drive at
@@ -51,8 +51,8 @@ void drive_example() {
   clamp.set(true);
   pros::delay(1000);
 
-  conveyor.move(-40);
-  pros::delay(300);
+  conveyor.move(-30);
+  pros::delay(700);
   conveyor.brake();
 
   // chassis.pid_turn_relative_set(45_deg, TURN_SPEED);
@@ -106,7 +106,7 @@ void drive_example() {
   chassis.pid_turn_relative_set(-90_deg, TURN_SPEED);
   chassis.pid_wait();
 
-  doinker.set(true);
+  intakeLift.set(true);
   pros::delay(1000);
 
   conveyor.move(127);
@@ -116,37 +116,50 @@ void drive_example() {
 
   pros::delay(2000);
 
-  chassis.pid_turn_relative_set(90_deg, TURN_SPEED);
-  doinker.set(false);
-  chassis.pid_wait();
+  // chassis.pid_turn_relative_set(90_deg, TURN_SPEED);
+  // intakeLift.set(false);
+  // chassis.pid_wait();
 
-  chassis.pid_drive_set(14_in, 80, true);
-  chassis.pid_wait();
+  // chassis.pid_drive_set(14_in, 80, true);
+  // chassis.pid_wait();
 
-  chassis.pid_turn_relative_set(-90_deg, TURN_SPEED);
-  doinker.set(false);
+  // chassis.pid_turn_relative_set(-90_deg, TURN_SPEED);
+  // intakeLift.set(false);
 
-  intake.move(127);
-  conveyor.move(127);
+  // intake.move(127);
+  // conveyor.move(127);
 
-  chassis.pid_drive_set(12_in, 80, false);
-  chassis.pid_wait();
+  // chassis.pid_drive_set(12_in, 80, false);
+  // chassis.pid_wait();
 
-  pros::delay(2000);
+  // pros::delay(2000);
 
-  chassis.pid_drive_set(-12_in, 80, false);
-  chassis.pid_wait();
+  // chassis.pid_drive_set(-12_in, 80, false);
+  // chassis.pid_wait();
 
   intake.brake();
   conveyor.brake();
+
+  // pros::delay(500);
+
+  // chassis.pid_turn_set(35_deg, TURN_SPEED);
+  // intake.move(127);
+  // conveyor.move(127);
+  // chassis.pid_drive_set(14_in, 80, true);
+  // chassis.pid_wait();
+
+  // pros::delay(1000);
+
+  // chassis.pid_drive_set(-18_in, 80, true);
+  // chassis.pid_wait();
 
   // pros::delay(2000);
 
   // chassis.pid_drive_set(-10_in, 40, true);
   // chassis.pid_wait();
 
-  intake.brake();
-  conveyor.brake();
+  // intake.brake();
+  // conveyor.brake();
 }
 
 ///
@@ -156,14 +169,27 @@ void turn_example() {
   // The first parameter is the target in degrees
   // The second parameter is max speed the robot will drive at
 
-  chassis.pid_turn_set(90_deg, TURN_SPEED);
+  // chassis.pid_turn_set(90_deg, TURN_SPEED);
+  // chassis.pid_wait();
+
+  // chassis.pid_turn_set(45_deg, TURN_SPEED);
+  // chassis.pid_wait();
+
+  // chassis.pid_turn_set(0_deg, TURN_SPEED);
+  // chassis.pid_wait();
+
+  chassis.pid_turn_set(35_deg, TURN_SPEED);
+  // intake.move(127);
+  // conveyor.move(127);
+  chassis.pid_drive_set(14_in, 80, true);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(45_deg, TURN_SPEED);
-  chassis.pid_wait();
+  pros::delay(1000);
 
-  chassis.pid_turn_set(0_deg, TURN_SPEED);
+  chassis.pid_drive_set(-18_in, 80, true);
   chassis.pid_wait();
+  // conveyor.brake();
+  // intake.brake();
 }
 
 ///
