@@ -1,4 +1,5 @@
 #include "main.h"
+#include "pros/misc.h"
 
 /////
 // For installation, upgrading, documentations, and tutorials, check out our website!
@@ -41,11 +42,11 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      Auton("Example Drive\n\nDrive forward and come back.", drive_example),
-      // Auton("Example Turn\n\nTurn 3 times.", turn_example),
-      // Auton("Drive and Turn\n\nDrive forward, turn, come back. ", drive_and_turn),
-      // Auton("Drive and Turn\n\nSlow down during drive.", wait_until_change_speed),
-      // Auton("Swing Example\n\nSwing in an 'S' curve", swing_example),
+      // Auton("Example Drive\n\nDrive forward and come back.", drive_example),
+      Auton("Example Turn\n\nTurn 3 times.", turn_example),
+      Auton("Drive and Turn\n\nDrive forward, turn, come back. ", drive_and_turn),
+      Auton("Drive and Turn\n\nSlow down during drive.", wait_until_change_speed),
+      Auton("Swing Example\n\nSwing in an 'S' curve", swing_example),
       Auton("Motion Chaining\n\nDrive forward, turn, and come back, but blend everything together :D", motion_chaining),
       Auton("Combine all 3 movements", combining_movements),
       Auton("Interference\n\nAfter driving forward, robot performs differently if interfered or not.", interfered_example),
@@ -140,12 +141,12 @@ void opcontrol() {
     // chassis.opcontrol_arcade_flipped(ez::SPLIT);    // Flipped split arcade
     // chassis.opcontrol_arcade_flipped(ez::SINGLE);   // Flipped single arcade
 
-    if (master.get_digital_new_press(DIGITAL_A)) {
+    if (master.get_digital_new_press(DIGITAL_DOWN)) {
       liftDeployed = !liftDeployed;
       lift.set(liftDeployed);
     }
 
-    if (master.get_digital_new_press(DIGITAL_X)) {
+    if (master.get_digital_new_press(DIGITAL_Y)) {
       clampDeployed = !clampDeployed;
       clamp.set(clampDeployed);
     }
@@ -155,7 +156,7 @@ void opcontrol() {
       doinker.set(doinkerDeployed);
     }
 
-    if (master.get_digital_new_press(DIGITAL_UP)) {
+    if (master.get_digital_new_press(DIGITAL_RIGHT)) {
       intakeLiftDeployed = !intakeLiftDeployed;
       intakeLift.set(intakeLiftDeployed);
     }
@@ -172,11 +173,11 @@ void opcontrol() {
     }
 
     // if (master.get_digital(DIGITAL_L1)) {
-
+      
     // } else if (master.get_digital(DIGITAL_L2)) {
-
+      
     // } else {
-
+      
     // }
 
     double hue = color.get_hue();
@@ -184,18 +185,18 @@ void opcontrol() {
 
     if (master.get_digital_new_press(DIGITAL_L1)) {
       lift_positioning = !lift_positioning;
-      master.rumble(".");
+        master.rumble(".");
     }
 
     if (master.get_digital_new_press(DIGITAL_L2)) {
       color_sorting = !color_sorting;
-      master.rumble("-");
+        master.rumble("-");
     }
 
     master.set_text(0, 0, "Clr: " + std::to_string(color_sorting) + " Lift: " + std::to_string(lift_positioning));
-
+    
     if (color_sorting) {
-      color.set_led_pwm(100);
+        color.set_led_pwm(100);
       if (red_side) {
         if (hue > 100 && hue < 220) {
           pros::delay(100);
@@ -232,7 +233,7 @@ void opcontrol() {
     // pros::lcd::initialize();
     // pros::lcd::set_text(1, "Hello, VEX V5!");
     // pros::delay(1000);
-
+    
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
 }
