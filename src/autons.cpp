@@ -137,13 +137,13 @@ void turn_example() {
   chassis.pid_turn_relative_set(-90_deg, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-48_in, 70, true);
+  chassis.pid_drive_set(-48_in, 50, true);
   chassis.pid_wait();
 
   clamp.set(true);
 
-  conveyor.move(-30);
-  pros::delay(700);
+  conveyor.move(-40);
+  pros::delay(1000);
   conveyor.brake();
 
   intake.move(127);
@@ -167,31 +167,42 @@ void turn_example() {
   intake.move(127);
   conveyor.move(127);
 
-  chassis.pid_swing_relative_set(ez::RIGHT_SWING, -90_deg, SWING_SPEED, 35);
+  chassis.pid_swing_relative_set(ez::RIGHT_SWING, -90_deg, 60, 15);
   chassis.pid_wait();
 
   pros::delay(1000);
 
   intakeLift.set(true);
 
-  chassis.pid_drive_set(24_in, 30, true);
+  chassis.pid_drive_set(20_in, 30, true);
   chassis.pid_wait();
 
-  pros::delay(500);
+  intakeLift.set(false);
 
+  chassis.pid_drive_set(-34_in, 30, true);
+  chassis.pid_wait();
 
   intake.brake();
   conveyor.brake();
 
-  chassis.pid_drive_set(-30_in, 100, true);
-  chassis.pid_wait();
 
-  chassis.pid_turn_relative_set(90_deg, TURN_SPEED);
-  chassis.pid_wait();
+  // pros::delay(500);
 
 
-  chassis.pid_drive_set(-90_in, 100, true);
-  chassis.pid_wait();
+
+
+  // intake.brake();
+  // conveyor.brake();
+
+  // chassis.pid_drive_set(-34_in, 100, true);
+  // chassis.pid_wait();
+
+  // chassis.pid_turn_relative_set(85_deg, TURN_SPEED);
+  // chassis.pid_wait();
+
+
+  // chassis.pid_drive_set(-90_in, 100, true);
+  // chassis.pid_wait();
 
   
 
