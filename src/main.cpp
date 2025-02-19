@@ -76,10 +76,10 @@ void opcontrol() {
   // ez::Piston doinker('F', false);
   // ez::Piston intakeLift('E', false);
 
-  bool liftDeployed = false;
-  bool clampDeployed = false;
-  bool doinkerDeployed = false;
-  bool intakeLiftDeployed = true;
+  // bool liftDeployed = false;
+  // bool clampDeployed = false;
+  // bool doinkerDeployed = false;
+  // bool intakeLiftDeployed = true;
 
   bool lift_positioning = false;
   bool color_sorting = false;
@@ -91,25 +91,10 @@ void opcontrol() {
     // chassis.opcontrol_tank();  // Tank control
     chassis.opcontrol_arcade_standard(ez::SPLIT);  // Standard split arcade
 
-    if (master.get_digital_new_press(DIGITAL_DOWN)) {
-      liftDeployed = !liftDeployed;
-      lift.set(liftDeployed);
-    }
-
-    if (master.get_digital_new_press(DIGITAL_Y)) {
-      clampDeployed = !clampDeployed;
-      clampPiston.set(clampDeployed);
-    }
-
-    if (master.get_digital_new_press(DIGITAL_B)) {
-      doinkerDeployed = !doinkerDeployed;
-      doinker.set(doinkerDeployed);
-    }
-
-    if (master.get_digital_new_press(DIGITAL_RIGHT)) {
-      intakeLiftDeployed = !intakeLiftDeployed;
-      intakeLift.set(intakeLiftDeployed);
-    }
+    wallstakeLift.button_toggle(master.get_digital(DIGITAL_RIGHT));
+    clampPiston.button_toggle(master.get_digital(DIGITAL_Y));
+    doinker.button_toggle(master.get_digital(DIGITAL_DOWN));
+    intakeLift.button_toggle(master.get_digital(DIGITAL_B));
 
     if (master.get_digital(DIGITAL_R1)) {
       intake.move(127);
@@ -126,15 +111,15 @@ void opcontrol() {
 
     if (master.get_digital_new_press(DIGITAL_L1)) {
       lift_positioning = !lift_positioning;
-        master.rumble(".");
+      master.rumble(".");
     }
 
     if (master.get_digital_new_press(DIGITAL_L2)) {
       color_sorting = !color_sorting;
-        master.rumble(". .");
+      master.rumble(". .");
     }
 
-    master.set_text(0, 0, "Co: " + std::to_string(color_sorting) + " L: " + std::to_string(lift_positioning) + " Cl: "+std::to_string(clampDeployed));
+    master.set_text(0, 0, "Co: " + std::to_string(color_sorting) + " L: " + std::to_string(lift_positioning) + " Cl: "+std::to_string(clampPiston.get()));
     
     if (color_sorting) {
       lift_positioning = false;
