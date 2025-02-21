@@ -97,5 +97,10 @@ inline void intakeInitialize(){ //Use this at the beginning of autos
     conveyor.brake();
 }
 
+inline void colorSort(){
 
+}
 
+inline void liftPositio(){
+    
+}

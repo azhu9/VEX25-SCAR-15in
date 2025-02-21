@@ -2,6 +2,7 @@
 
 #include "EZ-Template/piston.hpp"
 #include "api.h"
+#include "pros/distance.hpp"
 // Your motors, sensors, etc. should go here.  Below are examples
 
 // inline pros::Motor intake(1);

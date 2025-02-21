@@ -8,7 +8,7 @@ inline bool red_side = true;
 
 void drive_example();
 void turn_example();
-void drive_and_turn();
+void skills();
 void wait_until_change_speed();
 void swing_example();
 void motion_chaining();

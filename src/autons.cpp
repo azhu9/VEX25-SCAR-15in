@@ -1,12 +1,5 @@
 #include "main.h"
-
 #include "helpers.hpp"
-
-/////
-// For installation, upgrading, documentations, and tutorials, check out our website!
-// https://ez-robotics.github.io/EZ-Template/
-/////
-
 
 ///
 // Constants
@@ -209,21 +202,76 @@ void turn_example() {
 ///
 // Combining Turn + Drive
 ///
-void drive_and_turn() {
-  chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
+void skills() {
+  chassis.drive_angle_set(180_deg);
+
+  chassis.pid_swing_relative_set(ez::LEFT_SWING, -40_deg, SWING_SPEED, 55);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(45_deg, TURN_SPEED);
+  intakeInitialize();
+
+  chassis.pid_drive_set(-32_in, 50, true);
+  // chassis.pid_wait_until(-15_in);
+  // chassis.pid_speed_max_set(40);  
   chassis.pid_wait();
 
-  chassis.pid_turn_set(-45_deg, TURN_SPEED);
+  pros::delay(200);
+
+  clampIn();
+
+  pros::delay(200);
+
+
+  chassis.pid_drive_set(2_in, 50, true);
   chassis.pid_wait();
+
 
   chassis.pid_turn_set(0_deg, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-24_in, DRIVE_SPEED, true);
+  groupStart(127);
+
+  chassis.pid_drive_set(20_in, 50, true);
+  chassis.pid_wait_until(10_in);
+  chassis.pid_speed_max_set(40);  
   chassis.pid_wait();
+
+  pros::delay(1000);
+
+  chassis.pid_drive_set(-20_in, 50, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(90_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(28_in, 50, true);
+  chassis.pid_wait();
+
+  pros::delay(1000);
+
+  chassis.pid_turn_set(45_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_swing_set(ez::RIGHT_SWING, 0_deg, SWING_SPEED, 55);
+  chassis.pid_wait();
+
+  pros::delay(1000);
+
+  chassis.pid_drive_set(15_in, 50, true);
+  chassis.pid_wait();
+
+  pros::delay(100);
+
+  chassis.pid_drive_set(-15_in, 50, true);
+  chassis.pid_wait();
+
+  groupStop();
+
+  chassis.pid_swing_set(ez::RIGHT_SWING, 45_deg, SWING_SPEED, 30);
+  chassis.pid_wait();
+  
+  
+
 }
 
 ///

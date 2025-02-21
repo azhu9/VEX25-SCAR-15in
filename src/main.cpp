@@ -1,4 +1,5 @@
 #include "main.h"
+#include "autons.hpp"
 #include "pros/misc.h"
 #include "subsystems.hpp"
 
@@ -38,10 +39,10 @@ void initialize() {
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
       // Auton("Example Drive\n\nDrive forward and come back.", drive_example),
-      Auton("Example Turn\n\nTurn 3 times.", turn_example),
-      Auton("Drive and Turn\n\nDrive forward, turn, come back. ", drive_and_turn),
-      Auton("Drive and Turn\n\nSlow down during drive.", wait_until_change_speed),
-      Auton("Swing Example\n\nSwing in an 'S' curve", swing_example),
+      // Auton("Example Turn\n\nTurn 3 times.", turn_example),
+      Auton("Drive and Turn\n\nDrive forward, turn, come back. ", skills),
+      // Auton("Drive and Turn\n\nSlow down during drive.", wait_until_change_speed),
+      // Auton("Swing Example\n\nSwing in an 'S' curve", swing_example),
       Auton("Motion Chaining\n\nDrive forward, turn, and come back, but blend everything together :D", motion_chaining),
       Auton("Combine all 3 movements", combining_movements),
       Auton("Interference\n\nAfter driving forward, robot performs differently if interfered or not.", interfered_example),
@@ -71,15 +72,7 @@ void opcontrol() {
 
   chassis.drive_brake_set(driver_preference_brake);
 
-  // ez::Piston lift('G', false);
-  // // ez::Piston clamp('H', false);
-  // ez::Piston doinker('F', false);
-  // ez::Piston intakeLift('E', false);
-
-  // bool liftDeployed = false;
-  // bool clampDeployed = false;
-  // bool doinkerDeployed = false;
-  // bool intakeLiftDeployed = true;
+  pros::Distance distance(17);
 
   bool lift_positioning = false;
   bool color_sorting = false;
@@ -108,6 +101,7 @@ void opcontrol() {
     }
 
     double hue = color.get_hue();
+    int prox = distance.get();
 
     if (master.get_digital_new_press(DIGITAL_L1)) {
       lift_positioning = !lift_positioning;
@@ -125,10 +119,10 @@ void opcontrol() {
       lift_positioning = false;
         color.set_led_pwm(100);
       if (red_side) {
-        if (hue > 100 && hue < 220) {   
-          pros::delay(100);
+        if (hue > 80 && hue < 220 && prox < 45) {   
+          // pros::delay(75);
           conveyor.move(-127);
-          pros::delay(200);
+          pros::delay(250);
         }
       } else if (red_side == false) {
         if (hue > 0 && hue < 20) {
