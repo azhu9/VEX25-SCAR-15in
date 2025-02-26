@@ -208,7 +208,7 @@ void skills() {
   chassis.pid_swing_relative_set(ez::LEFT_SWING, -40_deg, SWING_SPEED, 55);
   chassis.pid_wait();
 
-  intakeInitialize();
+  // intakeInitialize();
 
   chassis.pid_drive_set(-32_in, 50, true);
   // chassis.pid_wait_until(-15_in);

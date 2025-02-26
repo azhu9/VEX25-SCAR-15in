@@ -1,6 +1,9 @@
 #include "main.h"
-#include "autons.hpp"
-#include "pros/misc.h"
+
+#include <string>
+
+#include "helpers.hpp"
+#include "pros/motors.h"
 #include "subsystems.hpp"
 
 /////
@@ -11,12 +14,27 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {-11, -12, -13, -14, -15},  // Left Chassis Ports (negative port will reverse it!)
-    {1, 2, 3, 4, 5},            // Right Chassis Ports (negative port will reverse it!)
+    {-6, -7, -8, -9, -10},      // Left Chassis Ports (negative port will reverse it!)
+    {1, 2, 3, 4, 5},  // Right Chassis Ports (negative port will reverse it!)
 
-    21,    // IMU Port
+    11,     // IMU Port
     2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
     600);  // Wheel RPM
+
+// void lbMove(int target, int timeout){
+//   int target_position = target;
+//   int pressTime = pros::millis();
+
+//   while (abs(position) < target_position) {
+//     int curTime = pros::millis();
+//     position = lb_rotation.get_position();
+//     ladyBrown.move(40); //55
+//     pros::delay(20);
+
+//     if(curTime - pressTime > timeout) break;
+//   }
+
+// }
 
 void initialize() {
   // Print our branding over your terminal :D
@@ -27,31 +45,33 @@ void initialize() {
   // Configure your chassis controls
   chassis.opcontrol_curve_buttons_toggle(false);  // Enables modifying the controller curve with buttons on the joysticks
   chassis.opcontrol_drive_activebrake_set(2);     // Sets the active brake kP. We recommend ~2.  0 will disable.
-  chassis.opcontrol_curve_default_set(3, 3);      // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
+  chassis.opcontrol_curve_default_set(2.5, 3.5);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
-  // Set the drive to your own constants from autons.cpp!
   default_constants();
-
-  // These are already defaulted to these buttons, but you can change the left/right curve buttons here!
-  // chassis.opcontrol_curve_buttons_left_set(pros::E_CONTROLLER_DIGITAL_LEFT, pros::E_CONTROLLER_DIGITAL_RIGHT);  // If using tank, only the left side is used.
-  // chassis.opcontrol_curve_buttons_right_set(pros::E_CONTROLLER_DIGITAL_Y, pros::E_CONTROLLER_DIGITAL_A);
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      // Auton("Example Drive\n\nDrive forward and come back.", drive_example),
-      // Auton("Example Turn\n\nTurn 3 times.", turn_example),
-      Auton("Drive and Turn\n\nDrive forward, turn, come back. ", skills),
-      // Auton("Drive and Turn\n\nSlow down during drive.", wait_until_change_speed),
+      // Auton("BLUE Positive goal rush \n Use Alignemnt tool", blueMatch),
+      // Auton("RED Positive goal rush \n Use Alignemnt tool", redMatch),
+      // Auton("RED SAFE Positive goal rush \n Use Alignemnt tool", redMatchSafe),
+      // Auton("RED SAFE Positive goal rush \n Use Alignemnt tool", intakeTest),
+      // Auton("RED SAFE Positive goal rush \n Use Alignemnt tool", lbTest),
+
+      Auton("SKILLS \n Align against wallstake", skills),
       // Auton("Swing Example\n\nSwing in an 'S' curve", swing_example),
-      Auton("Motion Chaining\n\nDrive forward, turn, and come back, but blend everything together :D", motion_chaining),
-      Auton("Combine all 3 movements", combining_movements),
-      Auton("Interference\n\nAfter driving forward, robot performs differently if interfered or not.", interfered_example),
+      // Auton("Motion Chaining\n\nDrive forward, turn, and come back, but blend everything together :D", motion_chaining),
+      // Auton("Combine all 3 movements", combining_movements),
+      // Auton("Interference\n\nAfter driving forward, robot performs differently if interfered or not.", interfered_example),
   });
 
   // Initialize chassis and auton selector
   chassis.initialize();
   ez::as::initialize();
   master.rumble(".");
+  lb_rotation.reset();
+
+  // ez::Piston flipper('G');   //UNCOMMENT FOR DRIVER CODE
+  // flipper.set(true);
 }
 
 void disabled() {}
@@ -68,26 +88,20 @@ void autonomous() {
 }
 
 void opcontrol() {
-  pros::motor_brake_mode_e_t driver_preference_brake = MOTOR_BRAKE_HOLD;
+  pros::motor_brake_mode_e_t driver_preference_brake = MOTOR_BRAKE_BRAKE;
 
   chassis.drive_brake_set(driver_preference_brake);
 
-  pros::Distance distance(17);
-
-  bool lift_positioning = false;
-  bool color_sorting = false;
-
   intake.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-  conveyor.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  ladyBrown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
+  lb_rotation.set_position(0);
+  int lastPressTime = 0;
+  const int doublePressThreshold = 175;
 
   while (true) {
     // chassis.opcontrol_tank();  // Tank control
     chassis.opcontrol_arcade_standard(ez::SPLIT);  // Standard split arcade
-
-    wallstakeLift.button_toggle(master.get_digital(DIGITAL_RIGHT));
-    clampPiston.button_toggle(master.get_digital(DIGITAL_Y));
-    doinker.button_toggle(master.get_digital(DIGITAL_DOWN));
-    intakeLift.button_toggle(master.get_digital(DIGITAL_B));
 
     if (master.get_digital(DIGITAL_R1)) {
       intake.move(127);
@@ -100,58 +114,46 @@ void opcontrol() {
       conveyor.brake();
     }
 
-    double hue = color.get_hue();
-    int prox = distance.get();
+    clampPiston.button_toggle(master.get_digital(DIGITAL_B));
 
-    if (master.get_digital_new_press(DIGITAL_L1)) {
-      lift_positioning = !lift_positioning;
-      master.rumble(".");
+    rightDoinker.set(master.get_digital(DIGITAL_Y) && !flipperPiston.get());
+
+    leftDoinker.set(master.get_digital(DIGITAL_RIGHT) && !flipperPiston.get());
+
+    flipperPiston.set(master.get_digital(DIGITAL_DOWN) && !rightDoinker.get() && !leftDoinker.get());
+
+    position = lb_rotation.get_position();
+
+    if (position == INT_MAX || position == INT_MIN) master.set_text(0, 0, "LB ERROR");
+
+    int vel = conveyor.get_actual_velocity();
+
+    pros::lcd::print(1, "Rotation: %i", position);
+    master.set_text(0, 0, "v : " + std::to_string(vel));
+
+    if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
+      int currentTime = pros::millis();
+
+      if (currentTime - lastPressTime <= doublePressThreshold) {
+        lbMove(2000, 1000);  // function in helpers.hpp
+
+        ladyBrown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+        master.rumble(".");
+      }
+
+      lastPressTime = currentTime;  // Update last press time
     }
 
-    if (master.get_digital_new_press(DIGITAL_L2)) {
-      color_sorting = !color_sorting;
-      master.rumble(". .");
-    }
-
-    master.set_text(0, 0, "Co: " + std::to_string(color_sorting) + " L: " + std::to_string(lift_positioning) + " Cl: "+std::to_string(clampPiston.get()));
-    
-    if (color_sorting) {
-      lift_positioning = false;
-        color.set_led_pwm(100);
-      if (red_side) {
-        if (hue > 80 && hue < 220 && prox < 45) {   
-          // pros::delay(75);
-          conveyor.move(-127);
-          pros::delay(250);
-        }
-      } else if (red_side == false) {
-        if (hue > 0 && hue < 20) {
-        }
-      }
-    } else if (lift_positioning) {
-      color_sorting = false;
-      color.set_led_pwm(100);
-      if (red_side) {
-        if (hue > 0 && hue < 20) {
-          conveyor.brake();
-          conveyor.move(-80);
-          pros::delay(100);
-          conveyor.brake();
-          lift_positioning = false;
-        }
-      } else if (red_side == false) {
-        if (hue > 100 && hue < 220) {
-          conveyor.brake();
-          conveyor.move(-80);
-          pros::delay(100);
-          conveyor.brake();
-          lift_positioning = false;
-        }
-      }
+    if (master.get_digital(DIGITAL_L1)) {
+      ladyBrown.move(127);
+    } else if (master.get_digital(DIGITAL_L2)) {
+      ladyBrown.move(-127);
+      pros::delay(80);
+      lb_rotation.set_position(0);
     } else {
-      color.set_led_pwm(0);
+      ladyBrown.brake();
     }
-    
+
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
 }
