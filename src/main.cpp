@@ -70,11 +70,10 @@ void initialize() {
   master.rumble(".");
   lb_rotation.reset();
 
-  // ez::Piston flipper('G');   //UNCOMMENT FOR DRIVER CODE
-  // flipper.set(true);
 }
 
-void disabled() {}
+void disabled() {
+}
 
 void competition_initialize() {}
 
@@ -98,6 +97,8 @@ void opcontrol() {
   lb_rotation.set_position(0);
   int lastPressTime = 0;
   const int doublePressThreshold = 175;
+  bool color_sorting = false;
+  double hue = color.get_hue();
 
   while (true) {
     // chassis.opcontrol_tank();  // Tank control
@@ -116,11 +117,11 @@ void opcontrol() {
 
     clampPiston.button_toggle(master.get_digital(DIGITAL_B));
 
-    rightDoinker.set(master.get_digital(DIGITAL_Y) && !flipperPiston.get());
+    rightDoinker.set(master.get_digital(DIGITAL_Y));
 
-    leftDoinker.set(master.get_digital(DIGITAL_RIGHT) && !flipperPiston.get());
+    leftDoinker.set(master.get_digital(DIGITAL_RIGHT));
 
-    flipperPiston.set(master.get_digital(DIGITAL_DOWN) && !rightDoinker.get() && !leftDoinker.get());
+    flipperPiston.set(master.get_digital(DIGITAL_DOWN));
 
     position = lb_rotation.get_position();
 
@@ -135,7 +136,7 @@ void opcontrol() {
       int currentTime = pros::millis();
 
       if (currentTime - lastPressTime <= doublePressThreshold) {
-        lbMove(2000, 1000);  // function in helpers.hpp
+        lbMove(1350, 1000);  // function in helpers.hpp
 
         ladyBrown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
         master.rumble(".");
@@ -144,7 +145,46 @@ void opcontrol() {
       lastPressTime = currentTime;  // Update last press time
     }
 
-    if (master.get_digital(DIGITAL_L1)) {
+
+    pros::lcd::print(1, "Rotation: %i", position);
+
+    if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
+      lbMove(1350, 1000);  // function in helpers.hpp
+
+        ladyBrown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+        master.rumble(".");
+    }
+
+    if (master.get_digital_new_press(DIGITAL_A)) {
+      color_sorting = !color_sorting;
+      master.rumble(".");
+    }
+
+    hue = color.get_hue();
+
+    if (color_sorting) {
+        color.set_led_pwm(100);
+      if (red_side) {
+        if (hue > 100 && hue < 360) {   
+          pros::delay(80);
+          conveyor.brake();
+          conveyor.move(-127);
+          pros::delay(200);
+        }
+      } else if (red_side == false) {
+        if (hue > 0 && hue < 20) {
+          pros::delay(80);
+          conveyor.brake();
+          conveyor.move(-127);
+          pros::delay(200);
+        }
+      }
+    }
+    else{
+      color.set_led_pwm(0);
+    }
+
+    if (master.get_digital(DIGITAL_L1) && abs(lb_rotation.get_position()) < 8000) {
       ladyBrown.move(127);
     } else if (master.get_digital(DIGITAL_L2)) {
       ladyBrown.move(-127);

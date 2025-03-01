@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "small skills",
+    "project_name": "SKILLS",
     "target": "v5",
     "templates": {
       "EZ-Template": {
@@ -423,7 +423,7 @@
     "upload_options": {
       "description": "making code ez",
       "icon": "planet",
-      "slot": 2
+      "slot": 3
     },
     "use_early_access": false
   }

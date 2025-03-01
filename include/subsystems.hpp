@@ -21,4 +21,4 @@ inline ez::Piston clampPiston('D', false);
 inline ez::Piston leftDoinker('B', false);
 inline ez::Piston rightDoinker('C', false);
 inline ez::Piston intakeLift('A', false);
-inline ez::Piston flipperPiston('E', false);
+inline ez::Piston flipperPiston('H', false);

@@ -9,10 +9,14 @@ const int SWING_SPEED = 90;
 
 inline bool isIntaking = false;
 
+
+
 // intake helper methods
 inline void intakeStart(int voltage) {
   intake.move(voltage);
 }
+
+
 
 inline void intakeStart(int voltage, int ms) {
   intake.move(voltage);
@@ -71,6 +75,23 @@ inline void groupStop() {
   conveyor.brake();
 }
 
+
+inline void unJamFunction() {
+  pros::delay(4000);
+  while (true) {
+    int velocity = conveyor.get_actual_velocity();
+    if (pros::competition::is_autonomous() && isIntaking) {
+      if (velocity < 10 && velocity >= 0) {
+        groupStart(-127);
+        pros::delay(300);
+      }
+      groupStart(127);
+    }
+    pros::delay(10);
+  }
+}
+
+
 // piston helpers
 
 inline void clampIn() {
@@ -110,7 +131,6 @@ inline void lbMove(int target, int timeout) {
   int pressTime = pros::millis();
 
   while (abs(position) < target_position) {
-    pros::lcd::print(1, "Rotation: %i", position);
 
     int curTime = pros::millis();
     position = lb_rotation.get_position();
