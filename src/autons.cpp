@@ -43,7 +43,7 @@ void colorSortingFunction() {
           pros::delay(80);
           conveyor.brake();
           conveyor.move(-127);
-          pros::delay(200);
+          pros::delay(250);
         }
       }
     }
@@ -55,99 +55,158 @@ pros::Task colorSorting(colorSortingFunction);
 ///
 // Drive Example
 ///
-void blueMatch() {
-  ez::Piston clamp('H', false);
-  ez::Piston intakeLift('F', false);
+void redMatch() {
+  // colorSorting.suspend();
 
-  // The first parameter is target inches
-  // The second parameter is max speed the robot will drive at
-  // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
-  // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
-
-  chassis.pid_turn_relative_set(-50_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(-12_in, 40, true);
-  chassis.pid_wait();
-
-  clamp.set(true);
-  pros::delay(1000);
-
-  conveyor.move(-30);
-  pros::delay(700);
-  conveyor.brake();
-
-  // chassis.pid_turn_relative_set(45_deg, TURN_SPEED);
+  // chassis.pid_turn_relative_set(-50_deg, TURN_SPEED);
   // chassis.pid_wait();
 
-  chassis.pid_swing_set(ez::RIGHT_SWING, 0_deg, 110, 45);
-  chassis.pid_wait();
+  // chassis.pid_drive_set(-12_in, 40, true);
+  // chassis.pid_wait();
 
-  conveyor.move(127);
-  intake.move(127);
+  // clampPiston.set(true);
+  // pros::delay(1000);
 
-  pros::delay(500);
+  // colorSorting.resume();
 
-  chassis.pid_drive_set(18_in, 40);
-  chassis.pid_wait();
+  // conveyor.move(-30);
+  // pros::delay(700);
+  // conveyor.brake();
 
-  // conveyor.move(-127);
-  // pros::delay(500);
+  // // chassis.pid_turn_relative_set(45_deg, TURN_SPEED);
+  // // chassis.pid_wait();
+
+  // chassis.pid_swing_set(ez::RIGHT_SWING, 0_deg, 110, 45);
+  // chassis.pid_wait();
 
   // conveyor.move(127);
   // intake.move(127);
 
-  pros::delay(1000);
+  // pros::delay(500);
 
-  conveyor.brake();
-  intake.brake();
-
-  chassis.pid_drive_set(-6_in, 70, true);
-  chassis.pid_wait();
-
-  chassis.pid_turn_relative_set(-90_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(44_in, 100, true);
-  chassis.pid_wait();
-
-  conveyor.move(127);
-  intake.move(127);
-
-  chassis.pid_drive_set(10_in, 40, true);
-  chassis.pid_wait();
-
-  pros::delay(2000);
-
-  conveyor.brake();
-  intake.brake();
-
-  // chassis.pid_drive_set(6_in, 40, true);
+  // chassis.pid_drive_set(18_in, 40);
   // chassis.pid_wait();
 
-  chassis.pid_turn_relative_set(-90_deg, TURN_SPEED);
+  // pros::delay(1000);
+
+  // conveyor.brake();
+  // intake.brake();
+
+  // chassis.pid_drive_set(-6_in, 70, true);
+  // chassis.pid_wait();
+
+  // chassis.pid_turn_relative_set(-90_deg, TURN_SPEED);
+  // chassis.pid_wait();
+
+  // chassis.pid_drive_set(44_in, 100, true);
+  // chassis.pid_wait();
+
+  // conveyor.move(127);
+  // intake.move(127);
+
+  // chassis.pid_drive_set(10_in, 40, true);
+  // chassis.pid_wait();
+
+  // pros::delay(2000);
+
+  // conveyor.brake();
+  // intake.brake();
+
+  // // chassis.pid_drive_set(6_in, 40, true);
+  // // chassis.pid_wait();
+
+  // chassis.pid_turn_relative_set(-90_deg, TURN_SPEED);
+  // chassis.pid_wait();
+
+  // intakeLift.set(true);
+  // pros::delay(1000);
+
+  // conveyor.move(127);
+  // intake.move(127);
+  // chassis.pid_drive_set(26_in, 40, true);
+  // chassis.pid_wait();
+
+  // pros::delay(2000);
+
+  // intake.brake();
+  // conveyor.brake();
+
+  // colorSorting.suspend();
+  
+  colorSorting.suspend();
+
+  chassis.pid_drive_set(-16_in, 80, true);
   chassis.pid_wait();
 
-  intakeLift.set(true);
+  chassis.pid_turn_relative_set(90_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-48_in, 50, true);
+  chassis.pid_wait();
+
+  clampPiston.set(true);
+
+  colorSorting.resume();
+
+  conveyor.move(-40);
+  pros::delay(1000);
+  conveyor.brake();
+
+  groupStart(127);
+
+  chassis.pid_turn_relative_set(-30_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(20_in, 40, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_relative_set(30_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  groupStop();
+
+  chassis.pid_drive_set(42_in, 80, true);
+  chassis.pid_wait();
+
+  intake.move(127);
+  conveyor.move(127);
+
+  chassis.pid_swing_relative_set(ez::LEFT_SWING, 90_deg, 60, 15);
+  chassis.pid_wait();
+
   pros::delay(1000);
 
-  conveyor.move(127);
-  intake.move(127);
-  chassis.pid_drive_set(26_in, 40, true);
+  // intakeLift.set(true);
+
+  chassis.pid_drive_set(12_in, 30, true);
   chassis.pid_wait();
 
-  pros::delay(2000);
+  // intakeLift.set(false);
+
+  chassis.pid_drive_set(-25_in, 30, true);
+  chassis.pid_wait();
 
   intake.brake();
   conveyor.brake();
+
+  colorSorting.suspend();
+
+  pros::delay(500);
+
+  intake.brake();
+  conveyor.brake();
+
+  chassis.pid_turn_relative_set(-85_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(500);
+
+  chassis.pid_drive_set(-90_in, 100, true);
+  chassis.pid_wait();
 }
 
-///
-// Turn Example
-///
-void redMatch() {
-  ez::Piston clamp('H', false);
-  ez::Piston intakeLift('E', false);
+void blueMatch(){
+  colorSorting.suspend();
 
   chassis.pid_drive_set(-16_in, 80, true);
   chassis.pid_wait();
@@ -158,7 +217,82 @@ void redMatch() {
   chassis.pid_drive_set(-48_in, 50, true);
   chassis.pid_wait();
 
-  clamp.set(true);
+  clampPiston.set(true);
+
+  colorSorting.resume();
+
+  conveyor.move(-40);
+  pros::delay(1000);
+  conveyor.brake();
+
+  groupStart(127);
+
+  chassis.pid_turn_relative_set(-30_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(20_in, 40, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_relative_set(30_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  groupStop();
+
+  chassis.pid_drive_set(42_in, 80, true);
+  chassis.pid_wait();
+
+  intake.move(127);
+  conveyor.move(127);
+
+  chassis.pid_swing_relative_set(ez::LEFT_SWING, 90_deg, 60, 15);
+  chassis.pid_wait();
+
+  pros::delay(1000);
+
+  // intakeLift.set(true);
+
+  chassis.pid_drive_set(12_in, 30, true);
+  chassis.pid_wait();
+
+  // intakeLift.set(false);
+
+  chassis.pid_drive_set(-25_in, 30, true);
+  chassis.pid_wait();
+
+  intake.brake();
+  conveyor.brake();
+
+  colorSorting.suspend();
+
+  pros::delay(500);
+
+  intake.brake();
+  conveyor.brake();
+
+  chassis.pid_turn_relative_set(-85_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(500);
+
+  chassis.pid_drive_set(-90_in, 100, true);
+  chassis.pid_wait();
+}
+
+void redMatchOld() {
+  colorSorting.suspend();
+
+  chassis.pid_drive_set(-16_in, 80, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_relative_set(-90_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-48_in, 50, true);
+  chassis.pid_wait();
+
+  clampPiston.set(true);
+
+  colorSorting.resume();
 
   conveyor.move(-40);
   pros::delay(1000);
@@ -202,6 +336,8 @@ void redMatch() {
 
   intake.brake();
   conveyor.brake();
+
+  colorSorting.suspend();
 
   // pros::delay(500);
 

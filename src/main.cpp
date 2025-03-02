@@ -51,7 +51,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      // Auton("BLUE Positive goal rush \n Use Alignemnt tool", blueMatch),
+      Auton("BLUE Positive goal rush \n Use Alignemnt tool", blueMatch),
       // Auton("RED Positive goal rush \n Use Alignemnt tool", redMatch),
       // Auton("RED SAFE Positive goal rush \n Use Alignemnt tool", redMatchSafe),
       // Auton("RED SAFE Positive goal rush \n Use Alignemnt tool", intakeTest),
@@ -130,7 +130,7 @@ void opcontrol() {
     int vel = conveyor.get_actual_velocity();
 
     pros::lcd::print(1, "Rotation: %i", position);
-    master.set_text(0, 0, "v : " + std::to_string(vel));
+    // master.set_text(0, 0, "v : " + std::to_string(vel));
 
     if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
       int currentTime = pros::millis();
@@ -147,6 +147,8 @@ void opcontrol() {
 
 
     pros::lcd::print(1, "Rotation: %i", position);
+    master.set_text(0, 0, "Co: " + std::to_string(color_sorting) +" Cl: "+std::to_string(clampPiston.get()));
+
 
     if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
       lbMove(1350, 1000);  // function in helpers.hpp
@@ -184,7 +186,7 @@ void opcontrol() {
       color.set_led_pwm(0);
     }
 
-    if (master.get_digital(DIGITAL_L1) && abs(lb_rotation.get_position()) < 8000) {
+    if (master.get_digital(DIGITAL_L1)) {
       ladyBrown.move(127);
     } else if (master.get_digital(DIGITAL_L2)) {
       ladyBrown.move(-127);
